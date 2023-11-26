@@ -17,3 +17,12 @@ in-depth-understanding-of-spring-boot-starter
       <artifactId>spring-data-redis</artifactId>
     </dependency>
 ````
+
+比如
+```
+<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+```
+为什么只要加入上面的注解，Spring 校验就能自动完成。
