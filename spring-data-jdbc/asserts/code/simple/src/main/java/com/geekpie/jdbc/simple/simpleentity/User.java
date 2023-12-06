@@ -13,6 +13,16 @@ import org.springframework.data.relational.core.mapping.Table;
 public class User {
     @Id
     private final Long id;
-    @Column("encrypted_password")
-    private final String encryptedPassword;
+    @Column("password")
+    private final String password;
+
+    private final String salt;
+
+    private String email;
+
+    private String mobile;
+
+    private Long gmtCreate;
+
+    private Long gmtUpdate;
 }
