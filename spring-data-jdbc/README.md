@@ -73,3 +73,74 @@ Caused by: org.springframework.dao.IncorrectUpdateSemanticsDataAccessException: 
 	这个是因为save方法其实是update。而非insert。
 	
 	
+	因此，如果要insert，应该使用如下的方法：
+	
+	```java
+@SpringBootTest(classes = UserConfiguration.class)
+@AutoConfigureJdbc
+public class SimpleEntityTests {
+    @Autowired
+    private JdbcAggregateTemplate jdbcAggregateTemplate;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Test
+    void directInsert() {
+        User user = new User(System.currentTimeMillis(), "password");
+        jdbcAggregateTemplate.insert(user);
+        userRepository.save(user);
+    }
+}
+```
+
+
+很显然，我们可以看到，ID是AUTO_INCREMENT的，并且其实无论是id和password 我们都希望是不能发生变化的。这有两种形式：
+1.final的形式
+2.用record模型。
+
+## @PersistenceCreator注解
+https://stackoverflow.com/questions/74360071/what-is-the-use-of-persistencecreator-annotation
+
+```java
+@AllArgsConstructor(access = AccessLevel.PRIVATE, onConstructor = @__(@PersistenceCreator))
+```
+
+表示将构造方法进行私有，通过PersistenceCreator生成的静态方法来构建。
+
+
+```
+@Data
+@AllArgsConstructor
+@Table("users")
+public class User {
+    @Id
+    private final Long id;
+    @Column("encrypted_password")
+    private final String encryptedPassword;
+}
+
+@SpringBootTest(classes = UserConfiguration.class)
+@AutoConfigureJdbc
+public class SimpleEntityTests {
+    @Autowired
+    private JdbcAggregateTemplate jdbcAggregateTemplate;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Test
+    void directInsert() {
+        Long id = System.currentTimeMillis();
+        User user = new User(id, "password");
+        jdbcAggregateTemplate.insert(user);
+        user = userRepository.findById(id).get();
+        Assert.notNull(user, "user is null");
+        System.out.println(user.getEncryptedPassword());
+    }
+}
+```
+
+可以看到成功的输出，并且final对象只有get方法。
+https://github.com/spring-projects/spring-data-examples/blob/main/jdbc/basics/src/main/java/example/springdata/jdbc/basics/simpleentity/Category.java
+

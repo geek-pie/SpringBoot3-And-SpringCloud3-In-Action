@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureJdbc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
+import org.springframework.util.Assert;
 
 /**
  * @author xujianxing
@@ -15,16 +17,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(classes = UserConfiguration.class)
 @AutoConfigureJdbc
 public class SimpleEntityTests {
-//    @Autowired
-//    private JdbcAggregateTemplate jdbcAggregateTemplate;
+    @Autowired
+    private JdbcAggregateTemplate jdbcAggregateTemplate;
 
     @Autowired
     private UserRepository userRepository;
 
     @Test
     void directInsert() {
-        User user = new User(System.currentTimeMillis(), "password");
-//        jdbcAggregateTemplate.insert(user);
-        userRepository.save(user);
+        Long id = System.currentTimeMillis();
+        User user = new User(id, "password");
+        jdbcAggregateTemplate.insert(user);
+        user = userRepository.findById(id).get();
+        Assert.notNull(user, "user is null");
+        System.out.println(user.getEncryptedPassword());
     }
 }
