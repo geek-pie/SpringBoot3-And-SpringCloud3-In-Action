@@ -144,3 +144,12 @@ public class SimpleEntityTests {
 可以看到成功的输出，并且final对象只有get方法。
 https://github.com/spring-projects/spring-data-examples/blob/main/jdbc/basics/src/main/java/example/springdata/jdbc/basics/simpleentity/Category.java
 
+
+
+另外一个问题：
+在很多情况下，ID是不需要外部传进来的。该怎么处理?
+
+参考Category
+先with，然后再创建
+
+返回了一个全新的对象。
